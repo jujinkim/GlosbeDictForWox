@@ -6,7 +6,7 @@
     "Author":"Jujin Kim",                   
     "Version":"1.0.0",                      
     "Language":"csharp",                    
-    "Website":"http://www.ciiwolstudio.com",
+    "Website":"https://ciiwol.github.io",
     "IcoPath": "Images\\pic.png",           
     "ExecuteFileName":"GlosbeDictForWox.dll"
   }
