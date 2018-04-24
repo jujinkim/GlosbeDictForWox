@@ -9,13 +9,9 @@ namespace GlosbeDictForWox
     public class Main : IPlugin
     {
         private GlosbeHelper mGlosbeHelper;
-        public delegate void DelOnSearched(WordItem[] searchResult);
-        private DelOnSearched delOnSearched;
-
         public void Init(PluginInitContext context)
         {
-            delOnSearched = onSearched;
-            mGlosbeHelper = new GlosbeHelper(delOnSearched);
+            mGlosbeHelper = new GlosbeHelper();
         }
 
         public List<Result> Query(Query query)
@@ -27,19 +23,28 @@ namespace GlosbeDictForWox
 
             WordItem[] wordItems = mGlosbeHelper.search(from, dest, word);
 
+            //if there is no result
+            if(wordItems.Length == 0)
+            {
+                results.Add(new Result()
+                {
+                    Title = "NONE",
+                    SubTitle = "No result."
+                });
+
+                return results;
+            }
+
+            //add item into result
             foreach (WordItem item in wordItems)
                 results.Add(new Result()
                 {
-                    Title = item.Meaning,
-                    SubTitle = string.Format("[{0}] {1}", item.Phrase, item.Explain)
+                    Title = item.Phrase,
+                    SubTitle = item.Meaning
                 });
 
             return results;
         }
 
-        private void onSearched(WordItem[] searchResult)
-        {
-
-        }
     }
 }

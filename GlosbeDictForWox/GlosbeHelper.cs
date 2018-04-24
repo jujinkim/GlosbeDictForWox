@@ -2,20 +2,17 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace GlosbeDictForWox
 {
-    class GlosbeHelper
+    internal class GlosbeHelper
     {
         private const string QUERY = "https://glosbe.com/gapi/translate?from={0}&dest={1}&format=json&phrase={2}";
-        private Main.DelOnSearched delOnSearched;
-        public GlosbeHelper(Main.DelOnSearched delOnSearched)
+
+        public GlosbeHelper()
         {
-            this.delOnSearched = delOnSearched;
         }
 
         /// <summary>
@@ -28,60 +25,89 @@ namespace GlosbeDictForWox
         {
             //create query
             var query = string.Format(QUERY, from, to, q);
-
+            List<WordItem> list = new List<WordItem>();
+            list.Add(new WordItem("", ""));
             //create request
             var req = WebRequest.Create(query) as HttpWebRequest;
-            req.TransferEncoding = "UTF-8";
             req.Method = "GET";
 
             //get json result0
             string json = "";
-            using (var res =  req.GetResponse() as HttpWebResponse)
+            try
             {
-                using (var resStream = res.GetResponseStream())
+                using (var res = req.GetResponse() as HttpWebResponse)
                 {
-                    var jsonStreamReader = new StreamReader(resStream, Encoding.UTF8);
-                    json =  jsonStreamReader.ReadToEnd();
+                    using (var resStream = res.GetResponseStream())
+                    {
+                        var jsonStreamReader = new StreamReader(resStream, Encoding.UTF8);
+                        json = jsonStreamReader.ReadToEnd();
+                    }
                 }
             }
-
+            catch (Exception ee)
+            {
+                json = ee.Message;
+                List<WordItem> wordItemListError = new List<WordItem>();
+                wordItemListError.Add(new WordItem("fail", "Fail to get result"));
+                return wordItemListError.ToArray();
+            }
             //parse json
             List<WordItem> wordItemList = new List<WordItem>();
             JObject jsonTotal = JObject.Parse(json);
 
-            if ((jsonTotal["result"] as JProperty).Value.ToString().Equals("ok"))
+            if (jsonTotal["result"].ToString() == "ok")
             {
-                JToken tuc = jsonTotal["tuc"];
-                foreach (JProperty prop in tuc)
+                //read 'tuc'
+                JArray tuc = jsonTotal["tuc"] as JArray;
+                //read each result in tuc
+                foreach (JToken tok in tuc)
                 {
-                    try
+                    //read each information in token
+                    foreach (JProperty prop in (tok as JObject).Properties())
                     {
-                        string phrase = "", meaning = "", explain = "";
-                        switch (prop.Name)
+                        try
                         {
-                            case "phrase":
-                                var token = prop.Value;
-                                phrase = token["text"].ToString();
-                                break;
-                            case "meanings":
-                                var arr = prop.Value as JArray;
-                                meaning = arr[0]["text"].ToString();
-                                explain = arr[1]["text"].ToString();
-                                break;
-                        }
+                            string phrase = "", meaning = "";
+                            switch (prop.Name)
+                            {
+                                case "phrase":
+                                    var token = prop.Value;
+                                    phrase = token["text"].ToString();
+                                    break;
 
-                        WordItem item = new WordItem(phrase, meaning, explain);
-                        wordItemList.Add(item);
-                    } catch (Exception e)
-                    {
-                        Console.WriteLine("Something wrong while getting a word : " + e.Message);
+                                case "meanings":
+                                    var arr = prop.Value as JArray;
+                                    StringBuilder sb = new StringBuilder();
+                                    if (arr != null)
+                                    {
+                                        for (int i = 0; i < arr.Count; i++)
+                                        {
+                                            sb.Append(arr[i]["text"].ToString());
+                                            sb.Append(" | ");
+                                        }
+                                        meaning = sb.ToString();
+                                    }
+                                    break;
+                            }
+
+                            //add searched word
+                            if (!string.IsNullOrEmpty(phrase))
+                            {
+                                WordItem item = new WordItem(phrase, meaning);
+                                wordItemList.Add(item);
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            //or add error
+                            WordItem item = new WordItem("fail", "parsing error" + e.Message);
+                            wordItemList.Add(item);
+                        }
                     }
                 }
             }
 
             return wordItemList.ToArray();
-            //callback
-            //delOnSearched?.Invoke(wordItemList.ToArray());
         }
     }
 }
