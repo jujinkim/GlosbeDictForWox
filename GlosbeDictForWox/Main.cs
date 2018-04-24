@@ -40,7 +40,8 @@ namespace GlosbeDictForWox
                 results.Add(new Result()
                 {
                     Title = item.Phrase,
-                    SubTitle = item.Meaning
+                    SubTitle = item.Meaning,
+                    IcoPath = "Images\\pic.png"
                 });
 
             return results;
