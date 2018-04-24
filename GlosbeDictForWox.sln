@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27428.2037
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GlosbeDictForWox", "GlosbeDictForWox\GlosbeDictForWox.csproj", "{7CC9BE0F-02CB-4EBF-9767-D5684256EC1F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7CC9BE0F-02CB-4EBF-9767-D5684256EC1F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7CC9BE0F-02CB-4EBF-9767-D5684256EC1F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7CC9BE0F-02CB-4EBF-9767-D5684256EC1F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7CC9BE0F-02CB-4EBF-9767-D5684256EC1F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CEA3D9CF-24CB-4B39-904B-CFA7C283E281}
+	EndGlobalSection
+EndGlobal
