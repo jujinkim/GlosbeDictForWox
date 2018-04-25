@@ -4,7 +4,7 @@
     "Name":"Glosbe Dictionary",             
     "Description":"Glosbe Dictionary",     
     "Author":"Jujin Kim",                   
-    "Version":"1.0.0",                      
+    "Version":"1.1.0",                      
     "Language":"csharp",                    
     "Website":"https://ciiwol.github.io",
     "IcoPath": "Images\\pic.png",           

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using Wox.Plugin;
 
 namespace GlosbeDictForWox
@@ -9,6 +6,7 @@ namespace GlosbeDictForWox
     public class Main : IPlugin
     {
         private GlosbeHelper mGlosbeHelper;
+
         public void Init(PluginInitContext context)
         {
             mGlosbeHelper = new GlosbeHelper();
@@ -23,13 +21,18 @@ namespace GlosbeDictForWox
 
             WordItem[] wordItems = mGlosbeHelper.search(from, dest, word);
 
-            //if there is no result
-            if(wordItems.Length == 0)
+            //if there is no result (first item is 'open in browser' which is always added.
+            if (wordItems.Length == 1)
             {
                 results.Add(new Result()
                 {
                     Title = "NONE",
-                    SubTitle = "No result."
+                    SubTitle = "No result.",
+                    IcoPath = "Images\\pic.png",
+                    Action = e =>
+                    {
+                        return true;
+                    }
                 });
 
                 return results;
@@ -41,11 +44,24 @@ namespace GlosbeDictForWox
                 {
                     Title = item.Phrase,
                     SubTitle = item.Meaning,
-                    IcoPath = "Images\\pic.png"
+                    IcoPath = "Images\\pic.png",
+                    Action = e =>
+                    {
+                        if (item.IsOpenWeb)
+                        {
+                            //open webbrowser
+                            System.Diagnostics.Process.Start(item.Meaning);
+                        }
+                        else
+                        {
+                            //copy phrase
+                            System.Windows.Forms.Clipboard.SetText(item.Phrase);
+                        }
+                        return true;
+                    }
                 });
 
             return results;
         }
-
     }
 }

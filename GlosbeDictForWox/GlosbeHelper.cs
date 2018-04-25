@@ -28,7 +28,7 @@ namespace GlosbeDictForWox
 
             //add item to search on website(open browser)
             string weburl = string.Format("https://glosbe.com/{0}/{1}/{2}", from, to, q);
-            wordItemList.Add(new WordItem("Open in browser", weburl));
+            wordItemList.Add(new WordItem("Open in browser", weburl, true));
 
             //create query
             var query = string.Format(QUERY, from, to, q);
