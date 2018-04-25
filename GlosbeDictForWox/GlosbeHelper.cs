@@ -23,6 +23,13 @@ namespace GlosbeDictForWox
         /// <param name="q">word to find</param>
         public WordItem[] search(string from, string to, string q)
         {
+            //wordItem List
+            List<WordItem> wordItemList = new List<WordItem>();
+
+            //add item to search on website(open browser)
+            string weburl = string.Format("https://glosbe.com/{0}/{1}/{2}", from, to, q);
+            wordItemList.Add(new WordItem("Open in browser", weburl));
+
             //create query
             var query = string.Format(QUERY, from, to, q);
             List<WordItem> list = new List<WordItem>();
@@ -52,7 +59,6 @@ namespace GlosbeDictForWox
                 return wordItemListError.ToArray();
             }
             //parse json
-            List<WordItem> wordItemList = new List<WordItem>();
             JObject jsonTotal = JObject.Parse(json);
 
             if (jsonTotal["result"].ToString() == "ok")
@@ -62,12 +68,13 @@ namespace GlosbeDictForWox
                 //read each result in tuc
                 foreach (JToken tok in tuc)
                 {
+                    string phrase = "", meaning = "";
+
                     //read each information in token
                     foreach (JProperty prop in (tok as JObject).Properties())
                     {
                         try
                         {
-                            string phrase = "", meaning = "";
                             switch (prop.Name)
                             {
                                 case "phrase":
@@ -83,18 +90,11 @@ namespace GlosbeDictForWox
                                         for (int i = 0; i < arr.Count; i++)
                                         {
                                             sb.Append(arr[i]["text"].ToString());
-                                            sb.Append(" | ");
+                                            if (i < arr.Count - 1) sb.Append(" | ");
                                         }
                                         meaning = sb.ToString();
                                     }
                                     break;
-                            }
-
-                            //add searched word
-                            if (!string.IsNullOrEmpty(phrase))
-                            {
-                                WordItem item = new WordItem(phrase, meaning);
-                                wordItemList.Add(item);
                             }
                         }
                         catch (Exception e)
@@ -103,6 +103,13 @@ namespace GlosbeDictForWox
                             WordItem item = new WordItem("fail", "parsing error" + e.Message);
                             wordItemList.Add(item);
                         }
+                    }
+
+                    //add searched word
+                    if (!string.IsNullOrEmpty(phrase))
+                    {
+                        WordItem item = new WordItem(phrase, meaning);
+                        wordItemList.Add(item);
                     }
                 }
             }
